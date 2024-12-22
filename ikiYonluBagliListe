@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Dugum {
+    int veri;
+    struct Dugum* onceki;
+    struct Dugum* sonraki;
+} Dugum;
+
+Dugum* yeniDugumOlustur(int veri) {
+    Dugum* yeniDugum = (Dugum*)malloc(sizeof(Dugum));
+    yeniDugum->veri = veri;
+    yeniDugum->onceki = NULL;
+    yeniDugum->sonraki = NULL;
+    return yeniDugum;
+}
+
+void arayaEkle(Dugum** bas, int arananDeger, int yeniDeger) {
+    if (*bas == NULL) {
+        printf("Liste boş, araya ekleme yapılamaz.\n");
+        return;
+    }
+
+    Dugum* gecici = *bas;
+
+    // Aranan değeri bul
+    while (gecici != NULL && gecici->veri != arananDeger) {
+        gecici = gecici->sonraki;
+    }
+
+    if (gecici == NULL) {
+        printf("Aranan değer bulunamadı.\n");
+        return;
+    }
+
+    Dugum* yeniDugum = yeniDugumOlustur(yeniDeger);
+
+    yeniDugum->sonraki = gecici->sonraki;
+    yeniDugum->onceki = gecici;
+
+    if (gecici->sonraki != NULL) {
+        gecici->sonraki->onceki = yeniDugum;
+    }
+
+    gecici->sonraki = yeniDugum;
+
+    printf("%d değeri, %d'den sonra listeye eklendi.\n", yeniDeger, arananDeger);
+}
+
+void listeYazdir(Dugum* bas) {
+    Dugum* gecici = bas;
+    printf("Liste: ");
+    while (gecici != NULL) {
+        printf("%d ", gecici->veri);
+        gecici = gecici->sonraki;
+    }
+    printf("\n");
+}
+
+void elemanEkleBasa(Dugum** bas, int veri) {
+    Dugum* yeniDugum = yeniDugumOlustur(veri);
+    yeniDugum->sonraki = *bas;
+    if (*bas != NULL) {
+        (*bas)->onceki = yeniDugum;
+    }
+    *bas = yeniDugum;
+}
+
+int main() {
+    Dugum* bas = NULL;
+
+    elemanEkleBasa(&bas, 10);
+    elemanEkleBasa(&bas, 20);
+    elemanEkleBasa(&bas, 30);
+
+    listeYazdir(bas);
+
+    arayaEkle(&bas, 20, 25);
+    listeYazdir(bas);
+
+    arayaEkle(&bas, 10, 15);
+    listeYazdir(bas);
+
+    arayaEkle(&bas, 50, 40); 
+
+    return 0;
+}
